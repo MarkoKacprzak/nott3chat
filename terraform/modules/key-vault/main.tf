@@ -23,7 +23,7 @@ resource "azurerm_role_assignment" "key_vault_admin" {
 # Due to eventual consistency, RBAC permissions can take time to propagate.
 # Introduce a short delay after role assignment before creating secrets.
 resource "time_sleep" "wait_for_kv_rbac" {
-  depends_on = [azurerm_role_assignment.key_vault_admin]
+  depends_on      = [azurerm_role_assignment.key_vault_admin]
   create_duration = "30s"
 }
 
@@ -40,7 +40,7 @@ resource "azurerm_key_vault_secret" "jwt_secret" {
 }
 
 resource "random_password" "jwt_secret" {
-  count = var.jwt_secret_key != "" ? 0 : 1
+  count   = var.jwt_secret_key != "" ? 0 : 1
   length  = 64
   special = true
 }

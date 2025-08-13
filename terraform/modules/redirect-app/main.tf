@@ -16,8 +16,8 @@ resource "azurerm_windows_web_app" "redirect" {
   https_only          = true
 
   site_config {
-    always_on = false  # F1 plan doesn't support always_on
-    
+    always_on = false # F1 plan doesn't support always_on
+
     application_stack {
       current_stack  = "dotnet"
       dotnet_version = "v4.0"
