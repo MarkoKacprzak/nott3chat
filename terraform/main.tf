@@ -107,6 +107,8 @@ module "app_service" {
   storage_account_id             = module.storage_account.storage_account_id
   app_insights_connection_string = var.enable_application_insights ? module.application_insights[0].connection_string : ""
   web_url                        = module.static_web_app.url
+  allowed_admin_ips              = var.allowed_admin_ips
+  restrict_app_service_access    = var.restrict_app_service_access
   tags                           = var.tags
 
   depends_on = [

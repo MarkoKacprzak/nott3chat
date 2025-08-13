@@ -104,3 +104,15 @@ variable "use_storage_managed_identity" {
   type        = bool
   default     = true
 }
+
+variable "allowed_admin_ips" {
+  description = "List of admin IP addresses/ranges to allow access (CIDR format)"
+  type        = list(string)
+  default     = []
+}
+
+variable "restrict_app_service_access" {
+  description = "Enable IP restrictions on App Service"
+  type        = bool
+  default     = true
+}

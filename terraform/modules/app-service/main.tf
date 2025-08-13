@@ -44,21 +44,29 @@ resource "azurerm_linux_web_app" "main" {
       support_credentials = true
     }
 
-    # IP restrictions for security - restrict to known sources
-    ip_restriction {
-      name                      = "Allow-Azure-Static-Web-Apps"
-      service_tag               = "AzureCloud"
-      action                    = "Allow"
-      priority                  = 100
-      description               = "Allow Azure services including Static Web Apps"
+    # IP restrictions for security - configurable via variables
+    dynamic "ip_restriction" {
+      for_each = var.restrict_app_service_access ? [1] : []
+      content {
+        name                      = "Allow-Azure-Services"
+        service_tag               = "AzureCloud"
+        action                    = "Allow"
+        priority                  = 100
+        description               = "Allow Azure services including Static Web Apps and CDN"
+      }
     }
     
-    ip_restriction {
-      name                      = "Deny-All-Others"
-      ip_address                = "0.0.0.0/0"
-      action                    = "Deny"
-      priority                  = 200
-      description               = "Deny all other traffic"
+    # Admin IP restrictions - configurable list
+    dynamic "ip_restriction" {
+      for_each = var.allowed_admin_ips
+      iterator = admin_ip
+      content {
+        name                      = "Allow-Admin-${admin_ip.key}"
+        ip_address                = admin_ip.value
+        action                    = "Allow"
+        priority                  = 50 + admin_ip.key
+        description               = "Allow admin access from ${admin_ip.value}"
+      }
     }
   }
 

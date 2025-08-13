@@ -72,10 +72,17 @@ modules/
 ## Security Features
 
 - **HTTPS Only**: App Service configured for HTTPS-only
-- **Managed Identity**: App Service uses managed identity for Key Vault access
-- **Secure Secrets**: All secrets stored in Key Vault
-- **File Storage**: SQLite database persisted in Azure File Share
+- **Managed Identity**: App Service uses managed identity for Key Vault and Storage access
+- **Secure Secrets**: All secrets stored in Key Vault with RBAC authorization
+- **Network Security**: 
+  - Storage account with network access restrictions (deny public, allow Azure services)
+  - App Service with configurable IP access restrictions
+  - TLS 1.2 minimum enforced
+- **File Storage**: SQLite database persisted in Azure File Share with secure access
 - **Application Insights**: Monitoring and logging enabled
+- **RBAC**: Proper role assignments for managed identity access
+
+For detailed security information, see [SECURITY.md](./SECURITY.md).
 
 ## Outputs
 
