@@ -104,6 +104,7 @@ module "app_service" {
   storage_account_name           = module.storage_account.name
   file_share_name                = module.storage_account.file_share_name
   storage_access_key             = module.storage_account.primary_access_key
+  storage_account_id             = module.storage_account.storage_account_id
   app_insights_connection_string = var.enable_application_insights ? module.application_insights[0].connection_string : ""
   web_url                        = module.static_web_app.url
   tags                           = var.tags

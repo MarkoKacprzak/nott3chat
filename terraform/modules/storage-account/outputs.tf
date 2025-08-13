@@ -18,3 +18,8 @@ output "file_share_name" {
   description = "The name of the file share"
   value       = azurerm_storage_share.database.name
 }
+
+output "storage_account_id" {
+  description = "The ID of the storage account for RBAC assignments"
+  value       = azurerm_storage_account.main.id
+}

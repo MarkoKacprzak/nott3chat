@@ -21,7 +21,7 @@ resource "azurerm_linux_web_app" "main" {
   location                      = var.location
   service_plan_id               = azurerm_service_plan.main.id
   https_only                    = true
-  public_network_access_enabled = true
+  public_network_access_enabled = true # Keep enabled but add IP restrictions
 
   identity {
     type = "SystemAssigned"
@@ -43,8 +43,26 @@ resource "azurerm_linux_web_app" "main" {
       allowed_origins     = [var.web_url]
       support_credentials = true
     }
+
+    # IP restrictions for security - restrict to known sources
+    ip_restriction {
+      name                      = "Allow-Azure-Static-Web-Apps"
+      service_tag               = "AzureCloud"
+      action                    = "Allow"
+      priority                  = 100
+      description               = "Allow Azure services including Static Web Apps"
+    }
+    
+    ip_restriction {
+      name                      = "Deny-All-Others"
+      ip_address                = "0.0.0.0/0"
+      action                    = "Deny"
+      priority                  = 200
+      description               = "Deny all other traffic"
+    }
   }
 
+  # Azure Files mount - use access key (managed identity support would require app code changes)
   storage_account {
     name         = "database-mount"
     type         = "AzureFiles"
@@ -114,6 +132,23 @@ resource "azurerm_role_assignment" "key_vault_secrets_user" {
 resource "azurerm_role_assignment" "acr_pull" {
   scope                = data.azurerm_container_registry.acr.id
   role_definition_name = "AcrPull"
+  principal_id         = azurerm_linux_web_app.main.identity[0].principal_id
+
+  depends_on = [azurerm_linux_web_app.main]
+}
+
+# RBAC role assignments for App Service managed identity to access storage account
+resource "azurerm_role_assignment" "storage_file_data_smb_share_contributor" {
+  scope                = var.storage_account_id
+  role_definition_name = "Storage File Data SMB Share Contributor"
+  principal_id         = azurerm_linux_web_app.main.identity[0].principal_id
+
+  depends_on = [azurerm_linux_web_app.main]
+}
+
+resource "azurerm_role_assignment" "storage_blob_data_contributor" {
+  scope                = var.storage_account_id
+  role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azurerm_linux_web_app.main.identity[0].principal_id
 
   depends_on = [azurerm_linux_web_app.main]

@@ -93,3 +93,14 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "storage_account_id" {
+  description = "The ID of the storage account for RBAC assignments"
+  type        = string
+}
+
+variable "use_storage_managed_identity" {
+  description = "Use managed identity for storage access instead of access keys"
+  type        = bool
+  default     = true
+}
